@@ -21,7 +21,7 @@ function compose_email() {
     document.querySelector('#compose-body').value = '';
 
     // add event listener to the form
-    document.querySelector('#compose-form').addEventListener('submit', () => {
+    document.querySelector('#submitbtn').addEventListener('click', () => {
         fetch('/emails', {
             method: 'POST',
             body: JSON.stringify({
@@ -32,8 +32,14 @@ function compose_email() {
         })
         .then(response => response.json())
         .then(result => {
-        // Print result
-            console.log(result.error);
+            if (result.hasOwnProperty("error")) {
+                // if an error exist, show it
+                document.querySelector('#form-alert').style.display = 'block';
+                document.querySelector('#form-alert').innerHTML = result.error;
+            } else {
+                 // on success, submit the form
+                document.querySelector('#compose-form').submit();
+            };
         });
     });
     

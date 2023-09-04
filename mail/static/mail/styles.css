@@ -1,3 +1,7 @@
 textarea {
     min-height: 400px;
 }
+
+#form-alert {
+    display: none;
+}
