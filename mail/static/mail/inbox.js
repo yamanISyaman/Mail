@@ -52,4 +52,27 @@ function load_mailbox(mailbox) {
 
     // Show the mailbox name
     document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+    
+    fetch(`/emails/${mailbox}`)
+        .then(response => response.json())
+        .then(emails => {
+            // Print emails
+            if (emails.length === 0) {
+                document.querySelector('#emails-view').innerHTML += "<h4>No Emails.</h4>";
+            } else {
+                emails.forEach((email) => {
+                    document.querySelector('#emails-view').innerHTML += `<div id="email${email.id}" class="card">
+                        <div class="card-body">
+                             <b>${email.sender}</b> ${email.subject}
+                             <span>${email.timestamp}</span>
+                        </div>
+                    </div>`;
+                    if (email.read === true) {
+                        document.querySelector(`#email${email.id}`).style.backgroundColor = '#c7c7c7ff';
+                    } else {}
+                    })
+            }
+            })
+
+            // ... do something else with emails ...
 }
