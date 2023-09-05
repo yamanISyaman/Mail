@@ -61,18 +61,24 @@ function load_mailbox(mailbox) {
                 document.querySelector('#emails-view').innerHTML += "<h4>No Emails.</h4>";
             } else {
                 emails.forEach((email) => {
-                    document.querySelector('#emails-view').innerHTML += `<div id="email${email.id}" class="card">
-                        <div class="card-body">
-                             <b>${email.sender}</b> ${email.subject}
-                             <span>${email.timestamp}</span>
-                        </div>
+                    const element = document.createElement('div');
+                    element.id = 'mail-card';
+                    element.className = 'card';
+                    element.innerHTML = `<div class="card-body">
+                            <b>${email.sender}</b> ${email.subject}
+                            <span>${email.timestamp}</span>
                     </div>`;
+                    element.addEventListener('click', () => show_mail(email.id));
+                    document.querySelector('#emails-view').appendChild(element);
                     if (email.read === true) {
-                        document.querySelector(`#email${email.id}`).style.backgroundColor = '#c7c7c7ff';
+                        element.style.backgroundColor = '#c7c7c7ff';
                     } else {}
                     })
             }
             })
+}
 
-            // ... do something else with emails ...
+function show_mail(mail_id) {
+    console.log(mail_id);
+    // show the the email view....
 }
