@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
     // Show compose view and hide other views
     document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#mail-show').style.display = 'none';
     document.querySelector('#compose-view').style.display = 'block';
 
     // Clear out composition fields
@@ -47,8 +48,9 @@ function compose_email() {
 
 function load_mailbox(mailbox) {
     // Show the mailbox and hide other views
-    document.querySelector('#emails-view').style.display = 'block';
     document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#mail-show').style.display = 'none';
+    document.querySelector('#emails-view').style.display = 'block';
 
     // Show the mailbox name
     document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -61,6 +63,11 @@ function load_mailbox(mailbox) {
                 document.querySelector('#emails-view').innerHTML += "<h4>No Emails.</h4>";
             } else {
                 emails.forEach((email) => {
+                    if (mailbox === 'archive' && email.archive === false) {
+                        return;
+                    } else if (mailbox === 'inbox' && email.archive === true) {
+                        return;
+                    } else {}
                     const element = document.createElement('div');
                     element.id = 'mail-card';
                     element.className = 'card';
@@ -79,6 +86,83 @@ function load_mailbox(mailbox) {
 }
 
 function show_mail(mail_id) {
-    console.log(mail_id);
-    // show the the email view....
+
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'none';
+    document.querySelector('#mail-show').style.display = 'block';
+    
+    // show the email
+
+    fetch(`/emails/${mail_id}`)
+    .then(response => response.json())
+    .then(email => {
+        // create the html that shows the email
+        const element = document.createElement('div');
+        element.innerHTML = `
+        <p><b>From:</b> ${email.sender}</p>
+        <p><b>To:</b> ${email.recipients}</p>
+        <p><b>Subject:</b> ${email.subject}</p>
+        <p><b>Timestamp:</b> ${email.timestamp}</p>
+        `;
+        document.querySelector('#mail-show').innerHTML = '';
+        document.querySelector('#mail-show').appendChild(element);
+        let reply_btn = document.createElement('button');
+        reply_btn.className = 'btn btn-primary';
+        reply_btn.id = 'reply-btn';
+        reply_btn.innerHTML = 'Reply';
+        
+        element.appendChild(reply_btn);
+        reply_btn.addEventListener('click', () => reply(email));
+        
+        let archive_btn = document.createElement('button');
+        archive_btn.className = 'btn btn-success';
+        archive_btn.id = 'archive-btn';
+        element.appendChild(archive_btn);
+
+        if (email.archived === false) {
+            
+            archive_btn.innerHTML = 'Archive';
+            archive_btn.addEventListener('click', () => {
+                fetch(`/emails/${email.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        archived: true
+                    })
+                })
+                 archive_btn.style.display = 'none';
+            });
+        } else {
+            
+            archive_btn.innerHTML = 'Unarchive';
+             archive_btn.addEventListener('click', () => {
+                fetch(`/emails/${email.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        archived: false
+                    })
+                })
+                archive_btn.style.display = 'none';
+            });
+            
+        }
+
+        const x = document.createElement('div');
+        x.innerHTML = `
+        <hr>
+        <p>${email.body}</p>
+        `
+        element.appendChild(x);
+    });
+    
+    fetch(`/emails/${mail_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            read: true
+        })
+    })
+}
+
+function reply(email) {
+    console.log('here4');
+    // make reply functionality 
 }
