@@ -26,8 +26,7 @@ SECRET_KEY = '05$4$3aew(8ywondz$g!k4m779pbvn9)euj0zp7-ae*x@4pxr+'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'mail.justatestcode.repl.co',
-    'mail--justatestcode.repl.co'
+    '*'
 ]
 
 
